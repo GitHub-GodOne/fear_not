@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 
+import { getDefaultOpenClawPromptTemplate } from '@/shared/services/landing-config';
 import { Tab } from '@/shared/types/blocks/common';
 
 export interface Setting {
@@ -40,6 +41,12 @@ export async function getSettingTabs(tab: string) {
       title: t('edit.tabs.auth'),
       url: '/admin/settings/auth',
       is_active: tab === 'auth',
+    },
+    {
+      name: 'landing',
+      title: t('edit.tabs.landing'),
+      url: '/admin/settings/landing',
+      is_active: tab === 'landing',
     },
     {
       name: 'payment',
@@ -115,6 +122,30 @@ export async function getSettingGroups() {
       title: t('groups.credit'),
       description: 'custom credit settings',
       tab: 'general',
+    },
+    {
+      name: 'landing_header',
+      title: t('groups.landing_header'),
+      description: 'custom your landing header and navigation',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_homepage',
+      title: t('groups.landing_homepage'),
+      description: 'custom homepage sections and json overrides',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_bundle',
+      title: t('groups.landing_bundle'),
+      description: 'manage uploaded html bundles and variant mapping',
+      tab: 'landing',
+    },
+    {
+      name: 'openclaw',
+      title: t('groups.openclaw'),
+      description: 'edit prompt templates for OpenClaw html generation',
+      tab: 'landing',
     },
     {
       name: 'email_auth',
@@ -367,6 +398,446 @@ export async function getSettings() {
       group: 'credit',
       tab: 'general',
       tip: 'description for initial credits',
+    },
+    {
+      name: 'landing_header_brand_title',
+      title: 'Header Brand Title',
+      type: 'text',
+      placeholder: 'Fear Not',
+      group: 'landing_header',
+      tab: 'landing',
+      tip: 'Override the header brand title without editing locale JSON files.',
+    },
+    {
+      name: 'landing_header_brand_logo',
+      title: 'Header Brand Logo',
+      type: 'upload_image',
+      group: 'landing_header',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_header_nav_en',
+      title: 'Header Navigation (EN JSON)',
+      type: 'textarea',
+      attributes: {
+        rows: 8,
+      },
+      placeholder: `[
+  { "title": "Home", "url": "/" },
+  { "title": "Pricing", "url": "/pricing" }
+]`,
+      tip: 'JSON array of navigation items for English. Each item follows the NavItem shape.',
+      group: 'landing_header',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_header_nav_zh',
+      title: 'Header Navigation (ZH JSON)',
+      type: 'textarea',
+      attributes: {
+        rows: 8,
+      },
+      placeholder: `[
+  { "title": "首页", "url": "/" },
+  { "title": "定价", "url": "/pricing" }
+]`,
+      tip: 'JSON array of navigation items for Chinese.',
+      group: 'landing_header',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_header_buttons_en',
+      title: 'Header Buttons (EN JSON)',
+      type: 'textarea',
+      attributes: {
+        rows: 6,
+      },
+      placeholder: `[
+  {
+    "title": "Create My Faith Video",
+    "url": "/ai-video-generator",
+    "variant": "default"
+  }
+]`,
+      tip: 'JSON array of button items for English.',
+      group: 'landing_header',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_header_buttons_zh',
+      title: 'Header Buttons (ZH JSON)',
+      type: 'textarea',
+      attributes: {
+        rows: 6,
+      },
+      placeholder: `[
+  {
+    "title": "创建我的信仰视频",
+    "url": "/ai-video-generator",
+    "variant": "default"
+  }
+]`,
+      tip: 'JSON array of button items for Chinese.',
+      group: 'landing_header',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_header_topbanner_en',
+      title: 'Top Banner Text (EN)',
+      type: 'textarea',
+      attributes: {
+        rows: 3,
+      },
+      placeholder: 'A short support or announcement message shown above the landing page header.',
+      group: 'landing_header',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_header_topbanner_zh',
+      title: 'Top Banner Text (ZH)',
+      type: 'textarea',
+      attributes: {
+        rows: 3,
+      },
+      placeholder: '显示在首页头部上方的公告文案。',
+      group: 'landing_header',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_header_show_sign',
+      title: 'Show User Sign Area',
+      type: 'switch',
+      value: 'true',
+      group: 'landing_header',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_header_show_notification',
+      title: 'Show Notification Bell',
+      type: 'switch',
+      value: 'true',
+      group: 'landing_header',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_header_show_locale',
+      title: 'Show Locale Switcher',
+      type: 'switch',
+      value: 'false',
+      group: 'landing_header',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_header_show_theme_toggler',
+      title: 'Show Light / Dark Toggler',
+      type: 'switch',
+      value: 'false',
+      group: 'landing_header',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_header_show_theme_switcher',
+      title: 'Show Theme Color Switcher',
+      type: 'switch',
+      value: 'false',
+      group: 'landing_header',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_header_override_en',
+      title: 'Advanced Header Override (EN JSON)',
+      type: 'textarea',
+      attributes: {
+        rows: 10,
+      },
+      placeholder: `{
+  "brand": { "title": "Fear Not" },
+  "show_locale": true
+}`,
+      tip: 'Deep-merged into the English landing header. Use this for fields not covered by the structured settings.',
+      group: 'landing_header',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_header_override_zh',
+      title: 'Advanced Header Override (ZH JSON)',
+      type: 'textarea',
+      attributes: {
+        rows: 10,
+      },
+      placeholder: `{
+  "brand": { "title": "不要惧怕" },
+  "show_locale": true
+}`,
+      tip: 'Deep-merged into the Chinese landing header.',
+      group: 'landing_header',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_home_show_sections_en',
+      title: 'Homepage Section Order (EN)',
+      type: 'textarea',
+      attributes: {
+        rows: 6,
+      },
+      placeholder: `[
+  "hero",
+  "html-bundle",
+  "faq"
+]`,
+      tip: 'JSON array or comma-separated list. Controls homepage section order for English.',
+      group: 'landing_homepage',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_home_show_sections_zh',
+      title: 'Homepage Section Order (ZH)',
+      type: 'textarea',
+      attributes: {
+        rows: 6,
+      },
+      placeholder: `[
+  "hero",
+  "html-bundle",
+  "faq"
+]`,
+      tip: 'JSON array or comma-separated list. Controls homepage section order for Chinese.',
+      group: 'landing_homepage',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_home_section_overrides_en',
+      title: 'Section Overrides (EN JSON)',
+      type: 'textarea',
+      attributes: {
+        rows: 12,
+      },
+      placeholder: `{
+  "hero": {
+    "title": "A new hero title",
+    "description": "Override only the English hero section."
+  }
+}`,
+      tip: 'Merged into page.sections for English. Best for per-section edits.',
+      group: 'landing_homepage',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_home_section_overrides_zh',
+      title: 'Section Overrides (ZH JSON)',
+      type: 'textarea',
+      attributes: {
+        rows: 12,
+      },
+      placeholder: `{
+  "hero": {
+    "title": "新的首页主标题",
+    "description": "只覆盖中文 hero section。"
+  }
+}`,
+      tip: 'Merged into page.sections for Chinese.',
+      group: 'landing_homepage',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_home_override_en',
+      title: 'Advanced Homepage Override (EN JSON)',
+      type: 'textarea',
+      attributes: {
+        rows: 12,
+      },
+      placeholder: `{
+  "title": "Landing page title",
+  "sections": {
+    "hero": {
+      "block": "hero-lumen5"
+    }
+  }
+}`,
+      tip: 'Deep-merged into the full English homepage payload. Use this when the page shape changes a lot.',
+      group: 'landing_homepage',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_home_override_zh',
+      title: 'Advanced Homepage Override (ZH JSON)',
+      type: 'textarea',
+      attributes: {
+        rows: 12,
+      },
+      placeholder: `{
+  "title": "首页标题",
+  "sections": {
+    "hero": {
+      "block": "hero-lumen5"
+    }
+  }
+}`,
+      tip: 'Deep-merged into the full Chinese homepage payload.',
+      group: 'landing_homepage',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_home_bundle_enabled',
+      title: 'Enable HTML Bundle Section',
+      type: 'switch',
+      value: 'false',
+      group: 'landing_bundle',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_home_bundle_section_key',
+      title: 'HTML Bundle Section Key',
+      type: 'text',
+      value: 'html-bundle',
+      placeholder: 'html-bundle',
+      tip: 'The section key inserted into homepage sections. Keep this stable if you reference it in section order.',
+      group: 'landing_bundle',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_home_bundle_height',
+      title: 'Bundle Iframe Height',
+      type: 'number',
+      value: '960',
+      placeholder: '960',
+      tip: 'The iframe height in pixels used for the embedded HTML bundle.',
+      group: 'landing_bundle',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_home_bundle_title_en',
+      title: 'Bundle Section Title (EN)',
+      type: 'text',
+      placeholder: 'Custom Homepage Content',
+      group: 'landing_bundle',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_home_bundle_title_zh',
+      title: 'Bundle Section Title (ZH)',
+      type: 'text',
+      placeholder: '定制首页内容',
+      group: 'landing_bundle',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_home_bundle_description_en',
+      title: 'Bundle Section Description (EN)',
+      type: 'textarea',
+      attributes: {
+        rows: 3,
+      },
+      placeholder:
+        'Load an OpenClaw-generated static HTML bundle and switch it by locale and theme.',
+      group: 'landing_bundle',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_home_bundle_description_zh',
+      title: 'Bundle Section Description (ZH)',
+      type: 'textarea',
+      attributes: {
+        rows: 3,
+      },
+      placeholder:
+        '加载 OpenClaw 生成的静态 HTML bundle，并根据语言和主题自动切换。',
+      group: 'landing_bundle',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_home_bundle_empty_message_en',
+      title: 'Bundle Empty Message (EN)',
+      type: 'textarea',
+      attributes: {
+        rows: 3,
+      },
+      placeholder:
+        'No matching HTML bundle is configured yet. Upload a zip in admin and map it to the current locale/theme.',
+      group: 'landing_bundle',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_home_bundle_empty_message_zh',
+      title: 'Bundle Empty Message (ZH)',
+      type: 'textarea',
+      attributes: {
+        rows: 3,
+      },
+      placeholder:
+        '当前没有匹配的 HTML bundle，请先在后台上传 zip 并完成语言 / 主题映射。',
+      group: 'landing_bundle',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_home_bundle_classname',
+      title: 'Bundle Section Class Name',
+      type: 'text',
+      placeholder: 'bg-background',
+      tip: 'Optional custom Tailwind classes for the bundle section wrapper.',
+      group: 'landing_bundle',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_home_bundle_variants',
+      title: 'Bundle Variant Map (JSON)',
+      type: 'textarea',
+      attributes: {
+        rows: 10,
+      },
+      placeholder: `{
+  "default:default": "home-default",
+  "en:default": "home-en",
+  "zh:default": "home-zh",
+  "zh:divine": "home-zh-divine"
+}`,
+      tip: 'Maps locale/theme combinations to bundle slugs. The upload tool below updates this automatically.',
+      group: 'landing_bundle',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_home_bundle_registry',
+      title: 'Bundle Registry (JSON)',
+      type: 'textarea',
+      attributes: {
+        rows: 12,
+      },
+      placeholder: `[
+  {
+    "slug": "home-en",
+    "title": "English Homepage Bundle",
+    "publicPath": "/landing-bundles/home-en",
+    "indexPath": "/landing-bundles/home-en/index.html",
+    "uploadedAt": "2026-03-10T12:00:00.000Z"
+  }
+]`,
+      tip: 'Stores uploaded bundle metadata. Managed automatically by the upload tool.',
+      group: 'landing_bundle',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_openclaw_prompt_en',
+      title: 'OpenClaw Prompt Template (EN)',
+      type: 'textarea',
+      value: getDefaultOpenClawPromptTemplate('en'),
+      attributes: {
+        rows: 16,
+      },
+      tip: 'Available placeholders: {{locale}}, {{locale_label}}, {{theme_label}}, {{theme_description}}, {{appearance}}, {{business_context}}, {{section_goal}}.',
+      group: 'openclaw',
+      tab: 'landing',
+    },
+    {
+      name: 'landing_openclaw_prompt_zh',
+      title: 'OpenClaw Prompt Template (ZH)',
+      type: 'textarea',
+      value: getDefaultOpenClawPromptTemplate('zh'),
+      attributes: {
+        rows: 16,
+      },
+      tip: '可用占位符：{{locale}}、{{locale_label}}、{{theme_label}}、{{theme_description}}、{{appearance}}、{{business_context}}、{{section_goal}}。',
+      group: 'openclaw',
+      tab: 'landing',
     },
     {
       name: 'email_auth_enabled',

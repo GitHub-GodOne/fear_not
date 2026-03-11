@@ -25,7 +25,11 @@
     "crisp": "Crisp",
     "credit": "Credit",
     "appinfo": "App Info",
-    "user_role": "User Role"
+    "user_role": "User Role",
+    "landing_header": "Landing Header",
+    "landing_homepage": "Landing Homepage",
+    "landing_bundle": "HTML Bundle",
+    "openclaw": "OpenClaw Prompt"
   },
   "edit": {
     "title": "Settings",
@@ -36,6 +40,7 @@
     "tabs": {
       "general": "General",
       "auth": "Auth",
+      "landing": "Landing",
       "payment": "Payment",
       "credit": "Credit",
       "email": "Email",

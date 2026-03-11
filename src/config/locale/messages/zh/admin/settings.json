@@ -25,7 +25,11 @@
     "crisp": "Crisp",
     "credit": "积分",
     "appinfo": "应用信息",
-    "user_role": "用户角色"
+    "user_role": "用户角色",
+    "landing_header": "落地页头部",
+    "landing_homepage": "落地页首页",
+    "landing_bundle": "HTML Bundle",
+    "openclaw": "OpenClaw 提示词"
   },
   "edit": {
     "title": "设置",
@@ -36,6 +40,7 @@
     "tabs": {
       "general": "通用",
       "auth": "认证",
+      "landing": "落地页",
       "payment": "支付",
       "credit": "积分",
       "email": "邮箱",

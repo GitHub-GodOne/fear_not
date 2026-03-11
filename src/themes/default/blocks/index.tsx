@@ -35,6 +35,7 @@ export * from "./page-detail";
 export * from "./comments";
 
 export * from "./template-previews";
+export * from "./html-bundle";
 
 export * from "./founder-story";
 export * from "./founder-letter";

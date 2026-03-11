@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { PERMISSIONS, requireAllPermissions } from '@/core/rbac';
+import { LandingBundleManager } from '@/shared/blocks/admin/landing-bundle-manager';
 import { Header, Main, MainHeader } from '@/shared/blocks/dashboard';
 import { FormCard } from '@/shared/blocks/form';
 import { getConfigs, saveConfigs } from '@/shared/models/config';
@@ -116,6 +117,7 @@ export default async function SettingsPage({
             collapsible={true}
           />
         ))}
+        {tab === 'landing' ? <LandingBundleManager locale={locale} /> : null}
       </Main>
     </>
   );

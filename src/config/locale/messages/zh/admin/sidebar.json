@@ -115,8 +115,22 @@
     "items": [
       {
         "title": "设置",
-        "url": "/admin/settings/general",
-        "icon": "Settings"
+        "icon": "Settings",
+        "is_expand": true,
+        "children": [
+          {
+            "title": "通用",
+            "url": "/admin/settings/general"
+          },
+          {
+            "title": "落地页",
+            "url": "/admin/settings/landing"
+          },
+          {
+            "title": "客服",
+            "url": "/admin/settings/customer_service"
+          }
+        ]
       },
       {
         "title": "API密钥",

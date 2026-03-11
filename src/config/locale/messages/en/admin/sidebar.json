@@ -120,8 +120,22 @@
     "items": [
       {
         "title": "Settings",
-        "url": "/admin/settings/general",
-        "icon": "Settings"
+        "icon": "Settings",
+        "is_expand": true,
+        "children": [
+          {
+            "title": "General",
+            "url": "/admin/settings/general"
+          },
+          {
+            "title": "Landing",
+            "url": "/admin/settings/landing"
+          },
+          {
+            "title": "Customer Service",
+            "url": "/admin/settings/customer_service"
+          }
+        ]
       }
     ]
   },

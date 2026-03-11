@@ -1,0 +1,813 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1"
+    />
+    <title>Adaptive Landing Bundle</title>
+    <style>
+      :root {
+        --primary: oklch(0.4 0.1 255);
+        --secondary: oklch(0.75 0.08 85);
+        --accent: oklch(0.7 0.15 60);
+        --background: oklch(0.98 0.005 75);
+        --foreground: oklch(0.25 0.02 255);
+        --muted: oklch(0.95 0.005 75);
+        --border: oklch(0.88 0.01 75);
+        --shadow: 0 24px 80px color-mix(in oklab, var(--primary) 16%, transparent);
+        --radius-xl: 32px;
+        --radius-lg: 24px;
+        --radius-md: 18px;
+        --content-width: 1200px;
+        color-scheme: light;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: var(--background);
+        color: var(--foreground);
+        font-family:
+          "Segoe UI",
+          "PingFang SC",
+          "Hiragino Sans GB",
+          "Microsoft YaHei",
+          sans-serif;
+      }
+
+      body {
+        min-height: 100vh;
+        background-image:
+          radial-gradient(circle at top left, color-mix(in oklab, var(--secondary) 28%, transparent), transparent 38%),
+          radial-gradient(circle at bottom right, color-mix(in oklab, var(--accent) 22%, transparent), transparent 42%),
+          linear-gradient(180deg, color-mix(in oklab, var(--background) 96%, white) 0%, var(--background) 100%);
+      }
+
+      .shell {
+        width: min(calc(100% - 32px), var(--content-width));
+        margin: 0 auto;
+        padding: 28px 0 40px;
+      }
+
+      .section-frame {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid color-mix(in oklab, var(--border) 90%, transparent);
+        border-radius: var(--radius-xl);
+        background:
+          linear-gradient(135deg, color-mix(in oklab, var(--background) 90%, white), color-mix(in oklab, var(--muted) 92%, transparent)),
+          var(--background);
+        box-shadow: var(--shadow);
+      }
+
+      .section-frame::before,
+      .section-frame::after {
+        content: "";
+        position: absolute;
+        pointer-events: none;
+        border-radius: 999px;
+        filter: blur(18px);
+        opacity: 0.9;
+      }
+
+      .section-frame::before {
+        width: 320px;
+        height: 320px;
+        top: -120px;
+        right: -80px;
+        background: color-mix(in oklab, var(--accent) 32%, transparent);
+      }
+
+      .section-frame::after {
+        width: 280px;
+        height: 280px;
+        bottom: -110px;
+        left: -90px;
+        background: color-mix(in oklab, var(--secondary) 26%, transparent);
+      }
+
+      .hero {
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+        gap: 28px;
+        padding: 32px;
+      }
+
+      .eyebrow-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 18px;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 34px;
+        padding: 0 14px;
+        border-radius: 999px;
+        border: 1px solid color-mix(in oklab, var(--border) 86%, transparent);
+        background: color-mix(in oklab, var(--background) 74%, white);
+        color: color-mix(in oklab, var(--foreground) 88%, var(--primary));
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+      }
+
+      .pill-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--accent), var(--primary));
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2.25rem, 5vw, 4.7rem);
+        line-height: 0.98;
+        letter-spacing: -0.04em;
+      }
+
+      .title-accent {
+        display: block;
+        color: color-mix(in oklab, var(--primary) 88%, var(--foreground));
+      }
+
+      .summary {
+        max-width: 62ch;
+        margin: 18px 0 0;
+        font-size: clamp(1rem, 1.55vw, 1.18rem);
+        line-height: 1.7;
+        color: color-mix(in oklab, var(--foreground) 76%, transparent);
+      }
+
+      .context-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin: 28px 0;
+      }
+
+      .context-card {
+        padding: 16px 18px;
+        border-radius: var(--radius-md);
+        border: 1px solid color-mix(in oklab, var(--border) 88%, transparent);
+        background: color-mix(in oklab, var(--background) 84%, white);
+      }
+
+      .context-label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: color-mix(in oklab, var(--foreground) 50%, transparent);
+      }
+
+      .context-value {
+        font-size: 0.98rem;
+        font-weight: 700;
+        line-height: 1.5;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-top: 10px;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-height: 52px;
+        padding: 0 22px;
+        border-radius: 999px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 15px;
+        transition:
+          transform 180ms ease,
+          box-shadow 180ms ease,
+          background 180ms ease,
+          color 180ms ease;
+      }
+
+      .button:hover,
+      .button:focus-visible {
+        transform: translateY(-1px);
+      }
+
+      .button.primary {
+        color: var(--background);
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        box-shadow: 0 18px 44px color-mix(in oklab, var(--primary) 30%, transparent);
+      }
+
+      .button.secondary {
+        color: var(--foreground);
+        border: 1px solid color-mix(in oklab, var(--border) 82%, transparent);
+        background: color-mix(in oklab, var(--background) 78%, white);
+      }
+
+      .micro-proof {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-top: 26px;
+        color: color-mix(in oklab, var(--foreground) 66%, transparent);
+        font-size: 0.94rem;
+      }
+
+      .micro-proof span::before {
+        content: "";
+        display: inline-block;
+        width: 7px;
+        height: 7px;
+        margin-right: 10px;
+        border-radius: 50%;
+        background: var(--accent);
+        vertical-align: middle;
+      }
+
+      .visual-panel {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 100%;
+        padding: 24px;
+        border: 1px solid color-mix(in oklab, var(--border) 88%, transparent);
+        border-radius: var(--radius-lg);
+        background:
+          radial-gradient(circle at top right, color-mix(in oklab, var(--accent) 22%, transparent), transparent 36%),
+          linear-gradient(180deg, color-mix(in oklab, var(--muted) 80%, white), color-mix(in oklab, var(--background) 95%, transparent));
+      }
+
+      .signal {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        width: fit-content;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: color-mix(in oklab, var(--background) 82%, white);
+        border: 1px solid color-mix(in oklab, var(--border) 88%, transparent);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .signal strong {
+        color: color-mix(in oklab, var(--primary) 88%, var(--foreground));
+      }
+
+      .stat-stack {
+        display: grid;
+        gap: 14px;
+        margin-top: 22px;
+      }
+
+      .stat-card {
+        padding: 18px;
+        border-radius: var(--radius-md);
+        background: color-mix(in oklab, var(--background) 82%, white);
+        border: 1px solid color-mix(in oklab, var(--border) 90%, transparent);
+      }
+
+      .stat-value {
+        display: block;
+        font-size: 1.7rem;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+      }
+
+      .stat-caption {
+        display: block;
+        margin-top: 8px;
+        color: color-mix(in oklab, var(--foreground) 64%, transparent);
+        font-size: 0.95rem;
+        line-height: 1.5;
+      }
+
+      .feature-row {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+        padding: 0 32px 32px;
+      }
+
+      .feature-card {
+        padding: 22px;
+        border-radius: var(--radius-lg);
+        background: color-mix(in oklab, var(--background) 84%, white);
+        border: 1px solid color-mix(in oklab, var(--border) 90%, transparent);
+      }
+
+      .feature-index {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, color-mix(in oklab, var(--secondary) 78%, white), color-mix(in oklab, var(--accent) 85%, white));
+        color: color-mix(in oklab, var(--primary) 78%, var(--foreground));
+        font-weight: 800;
+        margin-bottom: 16px;
+      }
+
+      .feature-card h2 {
+        margin: 0;
+        font-size: 1.18rem;
+        letter-spacing: -0.02em;
+      }
+
+      .feature-card p {
+        margin: 12px 0 0;
+        line-height: 1.72;
+        color: color-mix(in oklab, var(--foreground) 70%, transparent);
+      }
+
+      .footer-strip {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        padding: 0 32px 32px;
+      }
+
+      .footer-note {
+        color: color-mix(in oklab, var(--foreground) 58%, transparent);
+        font-size: 0.92rem;
+      }
+
+      .theme-badge {
+        display: inline-flex;
+        gap: 10px;
+        align-items: center;
+        padding: 10px 14px;
+        border-radius: 999px;
+        border: 1px solid color-mix(in oklab, var(--border) 88%, transparent);
+        background: color-mix(in oklab, var(--background) 84%, white);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .theme-swatch {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        box-shadow: inset 0 0 0 2px color-mix(in oklab, white 42%, transparent);
+      }
+
+      @media (max-width: 960px) {
+        .hero,
+        .feature-row,
+        .context-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .hero {
+          padding: 24px;
+        }
+
+        .feature-row,
+        .footer-strip {
+          padding-left: 24px;
+          padding-right: 24px;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .shell {
+          width: min(calc(100% - 20px), var(--content-width));
+          padding-top: 18px;
+          padding-bottom: 20px;
+        }
+
+        .hero,
+        .feature-row,
+        .footer-strip {
+          padding-left: 18px;
+          padding-right: 18px;
+        }
+
+        .feature-card,
+        .visual-panel,
+        .context-card {
+          padding: 18px;
+        }
+
+        .button {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="section-frame" aria-labelledby="landing-title">
+        <div class="hero">
+          <div>
+            <div class="eyebrow-row" id="eyebrow-row"></div>
+            <h1 id="landing-title">
+              <span id="title-line-1"></span>
+              <span class="title-accent" id="title-line-2"></span>
+            </h1>
+            <p class="summary" id="summary"></p>
+
+            <div class="context-grid">
+              <article class="context-card">
+                <span class="context-label" id="context-label-locale"></span>
+                <span class="context-value" id="context-value-locale"></span>
+              </article>
+              <article class="context-card">
+                <span class="context-label" id="context-label-goal"></span>
+                <span class="context-value" id="context-value-goal"></span>
+              </article>
+              <article class="context-card">
+                <span class="context-label" id="context-label-business"></span>
+                <span class="context-value" id="context-value-business"></span>
+              </article>
+            </div>
+
+            <div class="actions">
+              <a class="button primary" href="#next-step" data-cta id="primary-cta"></a>
+              <a class="button secondary" href="#feature-grid" id="secondary-cta"></a>
+            </div>
+
+            <div class="micro-proof" id="micro-proof"></div>
+          </div>
+
+          <aside class="visual-panel">
+            <div>
+              <div class="signal">
+                <span class="pill-dot"></span>
+                <span id="signal-text"></span>
+              </div>
+              <div class="stat-stack">
+                <article class="stat-card">
+                  <span class="stat-value" id="stat-1-value"></span>
+                  <span class="stat-caption" id="stat-1-caption"></span>
+                </article>
+                <article class="stat-card">
+                  <span class="stat-value" id="stat-2-value"></span>
+                  <span class="stat-caption" id="stat-2-caption"></span>
+                </article>
+                <article class="stat-card">
+                  <span class="stat-value" id="stat-3-value"></span>
+                  <span class="stat-caption" id="stat-3-caption"></span>
+                </article>
+              </div>
+            </div>
+
+            <div class="theme-badge" id="theme-badge">
+              <span class="theme-swatch" aria-hidden="true"></span>
+              <span id="theme-badge-text"></span>
+            </div>
+          </aside>
+        </div>
+
+        <div class="feature-row" id="feature-grid">
+          <article class="feature-card">
+            <div class="feature-index">01</div>
+            <h2 id="feature-1-title"></h2>
+            <p id="feature-1-copy"></p>
+          </article>
+          <article class="feature-card">
+            <div class="feature-index">02</div>
+            <h2 id="feature-2-title"></h2>
+            <p id="feature-2-copy"></p>
+          </article>
+          <article class="feature-card" id="next-step">
+            <div class="feature-index">03</div>
+            <h2 id="feature-3-title"></h2>
+            <p id="feature-3-copy"></p>
+          </article>
+        </div>
+
+        <div class="footer-strip">
+          <div class="footer-note" id="footer-note"></div>
+          <div class="theme-badge">
+            <span class="theme-swatch" aria-hidden="true"></span>
+            <span id="appearance-note"></span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        var params = new URLSearchParams(window.location.search);
+
+        var themeMap = {
+          divine: {
+            label: "Divine Light",
+            description: "Cream, Navy Blue and Gold for faith, purity and glory.",
+            light: {
+              primary: "oklch(0.4 0.1 255)",
+              secondary: "oklch(0.75 0.08 85)",
+              accent: "oklch(0.7 0.15 60)",
+              background: "oklch(0.98 0.005 75)",
+              foreground: "oklch(0.25 0.02 255)",
+              muted: "oklch(0.95 0.005 75)",
+              border: "oklch(0.88 0.01 75)"
+            },
+            dark: {
+              primary: "oklch(0.6 0.12 255)",
+              secondary: "oklch(0.8 0.1 85)",
+              accent: "oklch(0.75 0.15 60)",
+              background: "oklch(0.15 0.02 255)",
+              foreground: "oklch(0.95 0.005 255)",
+              muted: "oklch(0.22 0.02 255)",
+              border: "oklch(0.3 0.03 255)"
+            }
+          },
+          healing: {
+            label: "Healing Warmth",
+            description: "Olive, warm gold and orange for comfort and renewal.",
+            light: {
+              primary: "oklch(0.38 0.12 135)",
+              secondary: "oklch(0.75 0.12 85)",
+              accent: "oklch(0.58 0.18 55)",
+              background: "oklch(0.96 0.01 75)",
+              foreground: "oklch(0.28 0.04 65)",
+              muted: "oklch(0.94 0.01 75)",
+              border: "oklch(0.88 0.02 75)"
+            },
+            dark: {
+              primary: "oklch(0.55 0.12 135)",
+              secondary: "oklch(0.75 0.12 85)",
+              accent: "oklch(0.65 0.18 55)",
+              background: "oklch(0.18 0.02 135)",
+              foreground: "oklch(0.92 0.01 75)",
+              muted: "oklch(0.25 0.02 135)",
+              border: "oklch(0.35 0.03 135)"
+            }
+          },
+          ocean: {
+            label: "Ocean Breeze",
+            description: "Blue, cyan and teal for calm, clarity and momentum.",
+            light: {
+              primary: "oklch(0.55 0.18 240)",
+              secondary: "oklch(0.6 0.16 220)",
+              accent: "oklch(0.65 0.14 200)",
+              background: "oklch(0.98 0.01 240)",
+              foreground: "oklch(0.25 0.04 240)",
+              muted: "oklch(0.96 0.01 240)",
+              border: "oklch(0.9 0.01 240)"
+            },
+            dark: {
+              primary: "oklch(0.65 0.16 240)",
+              secondary: "oklch(0.68 0.14 220)",
+              accent: "oklch(0.7 0.12 200)",
+              background: "oklch(0.18 0.04 240)",
+              foreground: "oklch(0.95 0.01 240)",
+              muted: "oklch(0.25 0.04 240)",
+              border: "oklch(0.35 0.04 240)"
+            }
+          },
+          classic: {
+            label: "Classic Elegance",
+            description: "Neutral graphite and subtle gold for a polished SaaS tone.",
+            light: {
+              primary: "oklch(0.5 0.02 270)",
+              secondary: "oklch(0.6 0.01 270)",
+              accent: "oklch(0.7 0.03 60)",
+              background: "oklch(0.98 0.005 270)",
+              foreground: "oklch(0.25 0.02 270)",
+              muted: "oklch(0.96 0.005 270)",
+              border: "oklch(0.88 0.005 270)"
+            },
+            dark: {
+              primary: "oklch(0.7 0.01 270)",
+              secondary: "oklch(0.65 0.01 270)",
+              accent: "oklch(0.75 0.03 60)",
+              background: "oklch(0.2 0.01 270)",
+              foreground: "oklch(0.93 0.005 270)",
+              muted: "oklch(0.24 0.01 270)",
+              border: "oklch(0.4 0.01 270)"
+            }
+          }
+        };
+
+        var locale = params.get("locale") || "en";
+        var appearance = params.get("appearance") || "light";
+        var themeName = params.get("theme") || "divine";
+        var businessContext =
+          params.get("business_context") ||
+          (locale === "zh" ? "面向模板化 SaaS 首页 section 的高转化内容模块" : "A high-conversion section for a reusable SaaS landing page");
+        var sectionGoal =
+          params.get("section_goal") ||
+          (locale === "zh" ? "突出动态主题、语言与 HTML 模板接入能力" : "Highlight dynamic theme, locale and HTML bundle integration");
+
+        if (locale !== "zh") {
+          locale = "en";
+        }
+
+        if (appearance !== "dark") {
+          appearance = "light";
+        }
+
+        var theme = themeMap[themeName] || themeMap.divine;
+        var palette = appearance === "dark" ? theme.dark : theme.light;
+        var root = document.documentElement;
+        root.lang = locale;
+        root.style.setProperty("--primary", palette.primary);
+        root.style.setProperty("--secondary", palette.secondary);
+        root.style.setProperty("--accent", palette.accent);
+        root.style.setProperty("--background", palette.background);
+        root.style.setProperty("--foreground", palette.foreground);
+        root.style.setProperty("--muted", palette.muted);
+        root.style.setProperty("--border", palette.border);
+        root.style.setProperty("--shadow", "0 24px 80px color-mix(in oklab, " + palette.primary + " 16%, transparent)");
+        root.style.colorScheme = appearance;
+
+        var copy = {
+          en: {
+            eyebrowLocale: "Locale",
+            eyebrowTheme: "Theme",
+            eyebrowAppearance: "Appearance",
+            title1: "Build one landing section,",
+            title2: "adapt it for every market.",
+            summary:
+              "This static HTML bundle is designed to drop into a homepage without any build tooling. It reads runtime query parameters and reshapes the copy, color system and conversion story for the active locale and theme.",
+            localeLabel: "Locale Mode",
+            goalLabel: "Section Goal",
+            businessLabel: "Business Context",
+            primaryCta: "Launch This Section",
+            secondaryCta: "Review Layout Signals",
+            microProof: [
+              "Single entry bundle",
+              "Theme-aware CSS variables",
+              "Locale-ready content system"
+            ],
+            signal: "Live mode: " + theme.label,
+            stats: [
+              {
+                value: "1200px",
+                caption: "Target content width, balanced for homepage embedding."
+              },
+              {
+                value: locale.toUpperCase(),
+                caption: "Runtime language state pulled from the URL query."
+              },
+              {
+                value: appearance === "dark" ? "Dark" : "Light",
+                caption: "Appearance adapts without external dependencies."
+              }
+            ],
+            features: [
+              {
+                title: "Runtime-first presentation",
+                copy:
+                  "The section can be shipped as a zip and still respond to locale, theme and appearance at load time."
+              },
+              {
+                title: "Conversion-focused layout",
+                copy:
+                  "Clear headline hierarchy, structured proof points and a marked primary CTA keep the section usable inside a SaaS homepage."
+              },
+              {
+                title: "Brand-flexible visual system",
+                copy:
+                  "Color tokens are driven by CSS variables so the surrounding platform can keep a unified design language."
+              }
+            ],
+            footer:
+              "Use query params like ?locale=en&theme=divine&appearance=dark to preview variants instantly.",
+            appearance: "Appearance: " + (appearance === "dark" ? "Dark mode" : "Light mode")
+          },
+          zh: {
+            eyebrowLocale: "语言",
+            eyebrowTheme: "主题",
+            eyebrowAppearance: "外观",
+            title1: "一套首页 section，",
+            title2: "动态适配不同市场。",
+            summary:
+              "这个静态 HTML bundle 可以直接嵌入首页，无需额外构建。它会在运行时读取 URL 查询参数，自动调整文案、配色体系与转化叙事，适配当前语言和主题。",
+            localeLabel: "当前语言",
+            goalLabel: "模块目标",
+            businessLabel: "业务场景",
+            primaryCta: "立即启用这个模块",
+            secondaryCta: "查看布局信号",
+            microProof: [
+              "单入口静态 bundle",
+              "基于 CSS 变量的主题系统",
+              "支持多语言运行时切换"
+            ],
+            signal: "当前主题模式: " + theme.label,
+            stats: [
+              {
+                value: "1200px",
+                caption: "默认内容宽度，适合嵌入 SaaS 首页主区域。"
+              },
+              {
+                value: locale.toUpperCase(),
+                caption: "运行时从 URL 查询参数读取当前语言状态。"
+              },
+              {
+                value: appearance === "dark" ? "Dark" : "Light",
+                caption: "亮暗模式切换不依赖外部构建或第三方库。"
+              }
+            ],
+            features: [
+              {
+                title: "运行时动态呈现",
+                copy:
+                  "即使打包成 zip 发布，这个 section 仍然可以在加载时根据语言、主题和外观参数动态切换。"
+              },
+              {
+                title: "面向转化的布局结构",
+                copy:
+                  "清晰的标题层级、证明信息和显式主按钮，保证它在 SaaS 首页中既美观也易于转化。"
+              },
+              {
+                title: "可复用的品牌视觉系统",
+                copy:
+                  "所有核心颜色都由 CSS 变量驱动，方便与你的平台主题体系保持一致。"
+              }
+            ],
+            footer:
+              "可以直接通过 ?locale=zh&theme=divine&appearance=dark 这类参数快速预览不同变体。",
+            appearance: "当前外观: " + (appearance === "dark" ? "深色模式" : "浅色模式")
+          }
+        }[locale];
+
+        function text(id, value) {
+          var node = document.getElementById(id);
+          if (node) node.textContent = value;
+        }
+
+        function list(containerId, label, value) {
+          var node = document.getElementById(containerId);
+          if (!node) return;
+          var pill = document.createElement("span");
+          pill.className = "pill";
+          pill.innerHTML =
+            '<span class="pill-dot"></span><span>' +
+            label +
+            ": " +
+            value +
+            "</span>";
+          node.appendChild(pill);
+        }
+
+        list("eyebrow-row", copy.eyebrowLocale, locale === "zh" ? "中文" : "English");
+        list("eyebrow-row", copy.eyebrowTheme, theme.label);
+        list("eyebrow-row", copy.eyebrowAppearance, appearance === "dark" ? "Dark" : "Light");
+
+        text("title-line-1", copy.title1);
+        text("title-line-2", copy.title2);
+        text("summary", copy.summary);
+        text("context-label-locale", copy.localeLabel);
+        text("context-value-locale", locale === "zh" ? "中文 / zh" : "English / en");
+        text("context-label-goal", copy.goalLabel);
+        text("context-value-goal", sectionGoal);
+        text("context-label-business", copy.businessLabel);
+        text("context-value-business", businessContext);
+        text("primary-cta", copy.primaryCta);
+        text("secondary-cta", copy.secondaryCta);
+        text("signal-text", copy.signal);
+
+        var proof = document.getElementById("micro-proof");
+        copy.microProof.forEach(function (item) {
+          var span = document.createElement("span");
+          span.textContent = item;
+          proof.appendChild(span);
+        });
+
+        text("stat-1-value", copy.stats[0].value);
+        text("stat-1-caption", copy.stats[0].caption);
+        text("stat-2-value", copy.stats[1].value);
+        text("stat-2-caption", copy.stats[1].caption);
+        text("stat-3-value", copy.stats[2].value);
+        text("stat-3-caption", copy.stats[2].caption);
+
+        text("feature-1-title", copy.features[0].title);
+        text("feature-1-copy", copy.features[0].copy);
+        text("feature-2-title", copy.features[1].title);
+        text("feature-2-copy", copy.features[1].copy);
+        text("feature-3-title", copy.features[2].title);
+        text("feature-3-copy", copy.features[2].copy);
+
+        text("footer-note", copy.footer);
+        text("theme-badge-text", theme.label + " - " + theme.description);
+        text("appearance-note", copy.appearance);
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,7 @@
+Entry file: index.html
+External assets: none
+Dependencies: none
+Preview examples:
+- index.html?locale=en&theme=divine&appearance=light
+- index.html?locale=zh&theme=healing&appearance=dark
+- index.html?locale=en&theme=ocean&appearance=dark&business_context=Reusable%20SaaS%20homepage%20section&section_goal=Showcase%20theme-aware%20HTML%20bundle%20delivery
