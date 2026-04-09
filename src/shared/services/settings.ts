@@ -1091,12 +1091,10 @@ export async function getSettings() {
     {
       name: 'comfly_tts_speed',
       title: 'Comfly TTS Speed',
-      type: 'number',
+      type: 'text',
       value: DEFAULT_COMFLY_TTS_SPEED,
       attributes: {
-        step: '0.1',
-        min: '0.5',
-        max: '2',
+        inputMode: 'decimal',
       },
       placeholder: '1',
       group: 'comfly',
